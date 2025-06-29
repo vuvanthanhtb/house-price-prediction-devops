@@ -3,5 +3,3 @@ uvicorn
 scikit-learn
 pandas
 joblib
-
-dckr_pat_A0SVT9ON58ouxbM8sxrCq4DtNjE
