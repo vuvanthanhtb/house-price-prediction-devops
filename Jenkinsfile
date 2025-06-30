@@ -42,6 +42,23 @@ pipeline {
         }
       }
     }
+
+    stage('Deploy to Kubernetes') {
+      steps {
+        script {
+          sh '''
+            echo "Deploying to Kubernetes..."
+
+            # Replace image in deployment YAML dynamically (if using static file)
+            sed -i "s|image: .*|image: ${IMAGE_TAG}|" deployment/deployment.yaml
+
+            # Apply Kubernetes manifests
+            kubectl apply -f deployment/deployment.yaml
+            kubectl apply -f deployment/service.yaml
+          '''
+        }
+      }
+    }
   }
 
   post {
