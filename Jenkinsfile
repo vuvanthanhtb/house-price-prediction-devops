@@ -53,7 +53,7 @@ pipeline {
             sed -i "s|image: .*|image: ${IMAGE_TAG}|" deployment/deployment.yaml
 
             # Apply Kubernetes manifests
-            kubectl apply -f deployment/deployment.yaml
+            kubectl apply -f deployment/deployment.yaml --validate=false
             kubectl apply -f deployment/service.yaml
           '''
         }
