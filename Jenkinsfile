@@ -2,8 +2,8 @@ pipeline {
   agent any
 
   environment {
-    DOCKER_IMAGE = 'vuvanthanhtb/house-price-api:v1.0'
     GIT_REPO = 'https://github.com/vuvanthanhtb/house-price-prediction-devops.git'
+    DOCKER_REPO = 'vuvanthanhtb/house-price-api'
   }
 
   stages {
@@ -16,7 +16,11 @@ pipeline {
     stage('Build Docker Image') {
       steps {
         script {
-          dockerImage = docker.build("${env.DOCKER_IMAGE}")
+          TIMESTAMP = new Date().format("yyyyMMddHHmmss")
+          IMAGE_TAG = "${DOCKER_REPO}:${TIMESTAMP}"
+          env.IMAGE_TAG = IMAGE_TAG
+          echo "Building image: ${IMAGE_TAG}"
+          dockerImage = docker.build("${IMAGE_TAG}")
         }
       }
     }
@@ -42,7 +46,7 @@ pipeline {
 
   post {
     success {
-      echo 'Pipeline completed successfully.'
+      echo "Pipeline completed successfully. Image: ${env.IMAGE_TAG}"
     }
     failure {
       echo 'Pipeline failed.'
