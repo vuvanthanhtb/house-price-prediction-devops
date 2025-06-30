@@ -16,11 +16,11 @@ pipeline {
     stage('Build Docker Image') {
       steps {
         script {
-          TIMESTAMP = new Date().format("yyyyMMddHHmmss")
-          IMAGE_TAG = "${DOCKER_REPO}:${TIMESTAMP}"
+          def TIMESTAMP = new Date().format("yyyyMMddHHmmss")
+          def IMAGE_TAG = "${DOCKER_REPO}:${TIMESTAMP}"
           env.IMAGE_TAG = IMAGE_TAG
           echo "Building image: ${IMAGE_TAG}"
-          dockerImage = docker.build("${IMAGE_TAG}")
+          dockerImage = docker.build(IMAGE_TAG)
         }
       }
     }
@@ -49,7 +49,7 @@ pipeline {
       echo "Pipeline completed successfully. Image: ${env.IMAGE_TAG}"
     }
     failure {
-      echo 'Pipeline failed.'
+      echo "Pipeline failed."
     }
   }
 }
