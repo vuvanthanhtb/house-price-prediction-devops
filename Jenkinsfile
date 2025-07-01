@@ -2,30 +2,30 @@ pipeline {
   agent any
 
   environment {
-    GIT_REPO = 'https://github.com/vuvanthanhtb/house-price-prediction-devops.git'
+    GIT_REPO    = 'https://github.com/vuvanthanhtb/house-price-prediction-devops.git'
     DOCKER_REPO = 'vuvanthanhtb/house-price-api'
+    IMAGE_TAG   = 'latest'
   }
 
   stages {
     stage('Clone Repository') {
       steps {
-        git branch: 'main', url: "${env.GIT_REPO}"
+        cleanWs()
+        git branch: 'main', url: "${GIT_REPO}"
       }
     }
 
     stage('Build Docker Image') {
       steps {
         script {
-          def TIMESTAMP = new Date().format('yyyyMMddHHmmss')
-          def IMAGE_TAG = "${DOCKER_REPO}:${TIMESTAMP}"
-          env.IMAGE_TAG = IMAGE_TAG
-          echo "Building image: ${IMAGE_TAG}"
-          dockerImage = docker.build(IMAGE_TAG)
+          def fullImage = "${DOCKER_REPO}:${IMAGE_TAG}"
+          echo "Building Docker Image: ${fullImage}"
+          dockerImage = docker.build(fullImage)
         }
       }
     }
 
-    stage('Login to Docker Hub with Token') {
+    stage('Login to Docker Hub') {
       steps {
         withCredentials([string(credentialsId: 'dockerhub-token', variable: 'DOCKERHUB_TOKEN')]) {
           sh '''
@@ -46,12 +46,9 @@ pipeline {
     stage('Deploy with Helm') {
       steps {
         script {
-          echo 'Deploying to Kubernetes using Helm...'
-
+          echo "Deploying image ${DOCKER_REPO}:${IMAGE_TAG} to Kubernetes"
           sh """
-            helm upgrade --install house-price ./k8s-chart \\
-              --set image.repository=${DOCKER_REPO} \\
-              --set image.tag=${env.IMAGE_TAG.split(':')[1]}
+            helm upgrade --install house-price ./k8s-chart --set image.repository=${DOCKER_REPO} --set image.tag=${IMAGE_TAG}
           """
         }
       }
@@ -60,10 +57,10 @@ pipeline {
 
   post {
     success {
-      echo "Pipeline completed successfully. Deployed: ${env.IMAGE_TAG}"
+      echo "Pipeline completed successfully. Deployed: ${DOCKER_REPO}:${IMAGE_TAG}"
     }
     failure {
-      echo 'Pipeline failed.'
+      echo "Pipeline failed."
     }
   }
 }
