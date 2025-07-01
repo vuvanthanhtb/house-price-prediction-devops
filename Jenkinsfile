@@ -1,6 +1,10 @@
 pipeline {
   agent any
 
+  parameters {
+    string(name: 'BRANCH', defaultValue: 'main', description: 'Git branch to build')
+  }
+
   environment {
     GIT_REPO    = 'https://github.com/vuvanthanhtb/house-price-prediction-devops.git'
     DOCKER_REPO = 'vuvanthanhtb/house-price-api'
@@ -11,7 +15,7 @@ pipeline {
     stage('Clone Repository') {
       steps {
         cleanWs()
-        git branch: 'main', url: "${GIT_REPO}"
+        git branch: "${params.BRANCH}", url: "${env.GIT_REPO}"
       }
     }
 
@@ -47,7 +51,7 @@ pipeline {
       steps {
         script {
           sh '''
-            helm upgrade --install house-price ./k8s-chart
+            helm upgrade --install house-price ./k8s-chart/
           '''
         }
       }
