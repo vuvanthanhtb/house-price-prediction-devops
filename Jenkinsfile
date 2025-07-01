@@ -48,7 +48,7 @@ pipeline {
         script {
           echo "Deploying image ${DOCKER_REPO}:${IMAGE_TAG} to Kubernetes"
           sh """
-            helm upgrade --install house-price ./k8s-chart --set image.repository=${DOCKER_REPO} --set image.tag=${IMAGE_TAG}
+            helm upgrade --install house-price ./k8s-chart
           """
         }
       }
