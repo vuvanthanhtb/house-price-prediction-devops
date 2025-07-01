@@ -46,10 +46,9 @@ pipeline {
     stage('Deploy with Helm') {
       steps {
         script {
-          echo "Deploying image ${DOCKER_REPO}:${IMAGE_TAG} to Kubernetes"
-          sh """
+          sh '''
             helm upgrade --install house-price ./k8s-chart
-          """
+          '''
         }
       }
     }
@@ -60,7 +59,7 @@ pipeline {
       echo "Pipeline completed successfully. Deployed: ${DOCKER_REPO}:${IMAGE_TAG}"
     }
     failure {
-      echo "Pipeline failed."
+      echo 'Pipeline failed.'
     }
   }
 }
