@@ -16,7 +16,7 @@ pipeline {
     stage('Build Docker Image') {
       steps {
         script {
-          def TIMESTAMP = new Date().format("yyyyMMddHHmmss")
+          def TIMESTAMP = new Date().format('yyyyMMddHHmmss')
           def IMAGE_TAG = "${DOCKER_REPO}:${TIMESTAMP}"
           env.IMAGE_TAG = IMAGE_TAG
           echo "Building image: ${IMAGE_TAG}"
@@ -43,19 +43,16 @@ pipeline {
       }
     }
 
-    stage('Deploy to Kubernetes') {
+    stage('Deploy with Helm') {
       steps {
         script {
-          sh '''
-            echo "Deploying to Kubernetes..."
+          echo 'Deploying to Kubernetes using Helm...'
 
-            # Replace image in deployment YAML dynamically (if using static file)
-            sed -i "s|image: .*|image: ${IMAGE_TAG}|" deployment/deployment.yaml
-
-            # Apply Kubernetes manifests
-            kubectl apply -f deployment/deployment.yaml --validate=false
-            kubectl apply -f deployment/service.yaml
-          '''
+          sh """
+            helm upgrade --install house-price ./k8s-chart \\
+              --set image.repository=${DOCKER_REPO} \\
+              --set image.tag=${env.IMAGE_TAG.split(':')[1]}
+          """
         }
       }
     }
@@ -63,10 +60,10 @@ pipeline {
 
   post {
     success {
-      echo "Pipeline completed successfully. Image: ${env.IMAGE_TAG}"
+      echo "Pipeline completed successfully. Deployed: ${env.IMAGE_TAG}"
     }
     failure {
-      echo "Pipeline failed."
+      echo 'Pipeline failed.'
     }
   }
 }

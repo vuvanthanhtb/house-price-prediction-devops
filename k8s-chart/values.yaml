@@ -1,0 +1,10 @@
+image:
+  repository: vuvanthanhtb/house-price-api
+  tag: latest
+
+service:
+  type: NodePort
+  port: 80
+
+containerPort: 5000
+replicaCount: 1

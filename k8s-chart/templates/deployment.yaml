@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: house-price-api
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: house-price-api
@@ -13,7 +13,7 @@ spec:
         app: house-price-api
     spec:
       containers:
-      - name: house-price-api
-        image: vuvanthanhtb/house-price-api:v1
-        ports:
-        - containerPort: 5000
+        - name: house-price-api
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.containerPort }}
