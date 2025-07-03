@@ -23,9 +23,7 @@ pipeline {
     stage('Build Docker Image') {
       steps {
         script {
-          def fullImage = "${DOCKER_REPO}:${IMAGE_TAG}"
-          echo "Building Docker Image: ${fullImage}"
-          dockerImage = docker.build(fullImage)
+          dockerImage = docker.build("${DOCKER_REPO}:${IMAGE_TAG}")
         }
       }
     }
