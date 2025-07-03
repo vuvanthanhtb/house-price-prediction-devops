@@ -24,3 +24,10 @@ conda activate house-price-prediction
 }
 ```
 
+## Ansible
+
+To run the playbook:
+
+```bash
+ansible-playbook -i ansible/inventory ansible/playbook.yml
+```

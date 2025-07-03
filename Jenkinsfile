@@ -30,6 +30,14 @@ pipeline {
       }
     }
 
+    stage('Run Ansible Playbook') {
+      steps {
+        sh '''
+          ansible-playbook -i ansible/inventory ansible/playbook.yml
+        '''
+      }
+    }
+
     stage('Login to Docker Hub') {
       steps {
         withCredentials([string(credentialsId: 'dockerhub-token', variable: 'DOCKERHUB_TOKEN')]) {
